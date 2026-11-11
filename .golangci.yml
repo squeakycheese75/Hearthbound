@@ -1,0 +1,76 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - errorlint
+    - govet
+    - staticcheck
+    - unused
+    - ineffassign
+    - revive
+    - gocritic
+    - depguard
+    - forbidigo
+    - cyclop
+    - gosec
+  settings:
+    cyclop:
+      max-complexity: 10
+    gocritic:
+      enabled-checks:
+        - ruleguard
+      settings:
+        ruleguard:
+          rules: "${base-path}/tools/ruleguard/*.go"
+    revive:
+      rules:
+        - name: exported
+        - name: early-return
+        - name: superfluous-else
+        - name: indent-error-flow
+        - name: context-as-argument
+        - name: error-return
+        - name: error-strings
+    forbidigo:
+      forbid:
+        - pattern: '^time\.(Now|Since|Until)$'
+          msg: "inject a Clock; only adapters and cmd may read the wall clock"
+        - pattern: '^os\.(Getenv|LookupEnv|Exit)$'
+          msg: "read env and exit only in cmd"
+    depguard:
+      # Layer rules apply to production code; tests may import their own package and fakes.
+      rules:
+        domain:
+          files: ["**/internal/domain/**", "!$test"]
+          list-mode: strict
+          # Sub-packages such as domain/rules may build on the core domain package.
+          allow: ["$gostd", "dnd/internal/domain"]
+        usecase:
+          files: ["**/internal/usecase/**", "!$test"]
+          list-mode: strict
+          allow: ["$gostd", "dnd/internal/domain"]
+        adapter:
+          files: ["**/internal/adapter/**", "!$test"]
+          deny:
+            - pkg: dnd/internal/usecase
+              desc: adapters implement locally defined interfaces; never import usecase
+            - pkg: dnd/internal/delivery
+              desc: adapters must not depend on delivery
+        delivery:
+          files: ["**/internal/delivery/**", "!$test"]
+          deny:
+            - pkg: dnd/internal/adapter
+              desc: delivery talks to use cases through local interfaces; wiring happens in cmd
+  exclusions:
+    rules:
+      # Wall clock / env / exit are allowed at the edges.
+      - path: '(internal/adapter/|cmd/)'
+        linters: [forbidigo]
+      - path: '_test\.go'
+        linters: [forbidigo, gosec, cyclop]
+
+formatters:
+  enable:
+    - gofumpt

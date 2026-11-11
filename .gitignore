@@ -1,0 +1,6 @@
+/bin/
+/data/
+usecase.cover
+.DS_Store
+*.key
+.env

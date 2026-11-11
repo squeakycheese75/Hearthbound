@@ -1,0 +1,11 @@
+# Caddy gets and renews the HTTPS certificate for $DOMAIN automatically.
+{$DOMAIN} {
+	# Compress pages and API replies, but never the live event stream.
+	@compressible not path */events
+	encode @compressible zstd gzip
+
+	reverse_proxy app:8080 {
+		# Pass live events (server-sent events) straight through.
+		flush_interval -1
+	}
+}

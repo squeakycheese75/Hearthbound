@@ -1,0 +1,38 @@
+# Hearthbound behind Caddy (automatic HTTPS). Copy deploy/.env.example to .env,
+# fill it in, then: docker compose up -d --build
+services:
+  app:
+    build: .
+    image: hearthbound:latest
+    restart: unless-stopped
+    environment:
+      # Only used to create the first admin, on first start.
+      TABLETOP_ADMIN_USER: ${ADMIN_USER:-}
+      TABLETOP_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      TABLETOP_TRUST_PROXY: "1"
+      TABLETOP_BACKUP_KEEP: ${BACKUP_KEEP:-14}
+    volumes:
+      - data:/data
+    expose:
+      - "8080"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  data:
+  caddy_data:
+  caddy_config:

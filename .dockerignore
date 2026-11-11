@@ -1,0 +1,10 @@
+.git
+bin/
+data/
+*.db
+*.key
+usecase.cover
+.env
+web/node_modules
+web/dist
+docs/media

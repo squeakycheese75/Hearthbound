@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0e0c0a" />
+    <title>Hearthbound</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 29 9.5v13L16 30 3 22.5v-13z' fill='%23c9a24a'/%3E%3Ctext x='16' y='21' font-size='12' text-anchor='middle' fill='%230e0c0a' font-family='serif' font-weight='bold'%3E20%3C/text%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <!-- Roughens the parchment's edges (used by .parchment::before). -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="parchment-edge" x="-2%" y="-2%" width="104%" height="104%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="11" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
